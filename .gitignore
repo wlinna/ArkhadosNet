@@ -1,0 +1,6 @@
+*.log
+*.so
+
+build
+dist
+nbproject/private
