@@ -62,7 +62,6 @@ public class ServerSender extends Sender {
             server.broadcast(Filters.in(connection), otm);
         }
     }
-
     
     public void addCommandForSingle(Command command, HostedConnection connection) {
         if (command.isGuaranteed()) {

@@ -35,7 +35,6 @@ package arkhados.net;
  *
  * @author william
  */
-public class CommandTypeIds {
-    public static final int ACK = 0;
-    public static final int SYNC_DATA = 1;
+class CommandTypeIds {
+    public static final int ACK = -1;
 }
