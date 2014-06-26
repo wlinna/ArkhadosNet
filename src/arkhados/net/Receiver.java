@@ -143,4 +143,9 @@ public class Receiver extends AbstractAppState implements MessageListener {
     public void addConnection(HostedConnection connection) {
         lastReceivedOrderNumMap.put(connection, -1);
     }
+    
+    public void reset() {
+        lastReceivedOrderNumMap.clear();
+        lastReceivedOrderNum = -1;
+    }
 }

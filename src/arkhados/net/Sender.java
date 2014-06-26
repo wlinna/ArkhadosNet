@@ -142,6 +142,8 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     public abstract boolean isClient();
 
     public abstract boolean isServer();
+    
+    public abstract void reset();
 
     protected abstract List<OtmIdCommandListPair> getGuaranteedForSource(Object source);
 

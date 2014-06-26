@@ -47,9 +47,6 @@ public class ClientSender extends Sender {
     private List<Command> enqueuedUnreliables = new ArrayList<>();
     private Client client;
 
-    public ClientSender(Client client) {
-    }
-
     @Override
     public void addCommand(Command command) {
         if (this.client == null || !this.client.isConnected()) {
@@ -99,4 +96,11 @@ public class ClientSender extends Sender {
     public void setClient(Client client) {
         this.client = client;
     }
+
+    @Override
+    public void reset() {
+        unconfirmedGuaranteed.clear();
+        enqueuedGuaranteed.clear();
+        enqueuedUnreliables.clear();
+    }        
 }

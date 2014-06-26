@@ -124,4 +124,11 @@ public class ServerSender extends Sender {
     protected List<Command> getEnqueuedUnreliablesForSource(HostedConnection connection) {
         return enqueuedUnreliables.get(connection);
     }
+
+    @Override
+    public void reset() {
+        unconfirmedGuaranteed.clear();
+        enqueuedGuaranteed.clear();
+        enqueuedUnreliables.clear();
+    }
 }
