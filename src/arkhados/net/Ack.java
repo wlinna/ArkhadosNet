@@ -50,11 +50,6 @@ public class Ack implements Command {
     }
 
     @Override
-    public int getTypeId() {
-        return CommandTypeIds.ACK;
-    }
-
-    @Override
     public boolean isGuaranteed() {
         return false;
     }

@@ -131,7 +131,7 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     @Override
     public void readUnreliable(Object source, List<Command> unreliables) {
         for (Command command : unreliables) {
-            if (command.getTypeId() == CommandTypeIds.ACK) {
+            if (command instanceof Ack) {
                 Ack ack = (Ack) command;
                 confirmAllUntil(source, ack.getConfirmedOtmId());
                 break;

@@ -49,7 +49,7 @@ public class ClientSender extends Sender {
 
     @Override
     public void addCommand(Command command) {
-        if (this.client == null || !this.client.isConnected()) {
+        if (client == null || !client.isConnected()) {
             return;
         }
 

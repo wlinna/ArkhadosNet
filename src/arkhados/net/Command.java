@@ -37,6 +37,5 @@ package arkhados.net;
  */
 
 public interface Command {
-    public int getTypeId();
     public boolean isGuaranteed();
 }
