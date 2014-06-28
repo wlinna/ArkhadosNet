@@ -97,6 +97,10 @@ public class ClientSender extends Sender {
         return enqueuedUnreliables;
     }
 
+    public Client getClient() {
+        return client;
+    }
+    
     public void setClient(Client client) {
         this.client = client;
     }
