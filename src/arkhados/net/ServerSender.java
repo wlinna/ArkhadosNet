@@ -106,7 +106,10 @@ public class ServerSender extends Sender {
 
     @Override
     public void sendMessage() {
-        this.broadcast();
+        if (!server.isRunning()) {
+            return;
+        }
+        broadcast();
     }
 
     @Override

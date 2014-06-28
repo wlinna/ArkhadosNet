@@ -64,6 +64,10 @@ public class ClientSender extends Sender {
 
     @Override
     public void sendMessage() {
+        if (!client.isConnected()) {
+            return;
+        }
+
         OneTrueMessage otm = createOneTrueMessage(null);
         client.send(otm);
     }
@@ -102,5 +106,5 @@ public class ClientSender extends Sender {
         unconfirmedGuaranteed.clear();
         enqueuedGuaranteed.clear();
         enqueuedUnreliables.clear();
-    }        
+    }
 }
