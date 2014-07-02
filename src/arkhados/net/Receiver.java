@@ -58,7 +58,6 @@ public class Receiver extends AbstractAppState implements MessageListener {
     private List<CommandHandler> handlers = new ArrayList<>();
     private Application app;
     private int lastReceivedOrderNum = -1;
-//    private Ack reUsedAck = new Ack(-1);
     private Map<HostedConnection, Integer> lastReceivedOrderNumMap = new HashMap<>();
 
     public void registerCommandHandler(CommandHandler handler) {
@@ -73,8 +72,6 @@ public class Receiver extends AbstractAppState implements MessageListener {
 
     private void ack(Object source, int otmId) {
         Ack ack = new Ack(otmId);
-        logger.log(Level.INFO, "Acking otmId {0}", otmId);
-//        reUsedAck.setConfirmedOtmId(otmId);
         Sender sender = app.getStateManager().getState(Sender.class);
         if (sender.isClient()) {
             sender.addCommand(ack);

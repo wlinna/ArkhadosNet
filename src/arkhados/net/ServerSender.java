@@ -36,10 +36,10 @@ import com.jme3.network.HostedConnection;
 import com.jme3.network.Server;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  *
@@ -47,29 +47,30 @@ import java.util.logging.Level;
  */
 public class ServerSender extends Sender {
 
-    private Map<HostedConnection, List<OtmIdCommandListPair>> unconfirmedGuaranteed = new HashMap<>();
-    private Map<HostedConnection, List<Command>> enqueuedGuaranteed = new HashMap<>();
-    private Map<HostedConnection, List<Command>> enqueuedUnreliables = new HashMap<>();
-    private Server server;
-
+    private final Map<HostedConnection, List<OtmIdCommandListPair>> unconfirmedGuaranteed = new HashMap<>();
+    private final Map<HostedConnection, List<Command>> enqueuedGuaranteed = new HashMap<>();
+    private final Map<HostedConnection, List<Command>> enqueuedUnreliables = new HashMap<>();
+    private Server server;    
+    
     public ServerSender(Server server) {
         this.server = server;
     }
 
     private void broadcast() {
-        for (HostedConnection connection : enqueuedGuaranteed.keySet()) {
-            OneTrueMessage otm = createOneTrueMessage(connection);            
-            server.broadcast(Filters.in(connection), otm);
+        try {
+            for (HostedConnection connection : enqueuedGuaranteed.keySet()) {
+                OneTrueMessage otm = createOneTrueMessage(connection);
+                server.broadcast(Filters.in(connection), otm);
+            }
+        } catch (RuntimeException ex) {
+            throw ex;
         }
     }
-    
+
     public void addCommandForSingle(Command command, HostedConnection connection) {
         if (command.isGuaranteed()) {
-            logger.log(Level.INFO, "Adding GUARANTEED command");
             enqueuedGuaranteed.get(connection).add(command);
         } else {
-            logger.info("Adding UNRELIABLE command");
-
             enqueuedUnreliables.get(connection).add(command);
         }
 
@@ -89,8 +90,11 @@ public class ServerSender extends Sender {
     }
 
     public void addConnection(HostedConnection conn) {
-        unconfirmedGuaranteed.put(conn, new ArrayList<OtmIdCommandListPair>());
-        enqueuedGuaranteed.put(conn, new ArrayList<Command>());
+        unconfirmedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<OtmIdCommandListPair>()));
+        enqueuedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<Command>()));
+        
+        // There doesn't seem to be any problems with unreliables so 
+        // enqueuedUnreliables gets unsynchronized list
         enqueuedUnreliables.put(conn, new ArrayList<Command>());
     }
 
@@ -119,7 +123,8 @@ public class ServerSender extends Sender {
 
     @Override
     protected List<Command> getEnqueuedGuaranteedForSource(HostedConnection connection) {
-        return enqueuedGuaranteed.get(connection);
+        List<Command> list = enqueuedGuaranteed.get(connection);
+        return list;
     }
 
     @Override

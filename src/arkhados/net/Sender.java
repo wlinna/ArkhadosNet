@@ -68,7 +68,8 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
         OneTrueMessage otm = new OneTrueMessage(otmIdCounter);
 
         if (!enqueuedGuaranteed.isEmpty()) {
-            unconfirmedGuaranteed.add(new OtmIdCommandListPair(otmIdCounter, new ArrayList<>(enqueuedGuaranteed)));
+            unconfirmedGuaranteed.add(new OtmIdCommandListPair(otmIdCounter,
+                    new ArrayList<>(enqueuedGuaranteed)));
         }
 
         otm.setOrderNum(otmIdCounter);
@@ -89,8 +90,6 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     }
 
     private void confirmAllUntil(Object source, int until) {
-        logger.log(Level.INFO, "Confirming all messages until {0}", until);
-
         List<OtmIdCommandListPair> listToRemoveFrom = getGuaranteedForSource(source);
 
         for (Iterator<OtmIdCommandListPair> it = listToRemoveFrom.iterator(); it.hasNext();) {
@@ -112,8 +111,6 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
         if (!shouldSend) {
             return;
         }
-
-        logger.info("Sending data");
 
         sendMessage();
 
