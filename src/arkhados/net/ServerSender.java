@@ -138,4 +138,8 @@ public class ServerSender extends Sender {
         enqueuedGuaranteed.clear();
         enqueuedUnreliables.clear();
     }
+
+    public Server getServer() {
+        return server;
+    }
 }
