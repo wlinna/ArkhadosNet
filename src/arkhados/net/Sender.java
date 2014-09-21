@@ -50,7 +50,7 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     protected static final Logger logger = Logger.getLogger(Sender.class.getName());
 
     static {
-        logger.setLevel(Level.SEVERE);
+        logger.setLevel(Level.INFO);
     }
     private int otmIdCounter = 0;
     private boolean shouldSend;

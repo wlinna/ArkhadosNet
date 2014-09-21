@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  *
@@ -62,8 +63,9 @@ public class ServerSender extends Sender {
                 OneTrueMessage otm = createOneTrueMessage(connection);
                 server.broadcast(Filters.in(connection), otm);
             }
-        } catch (RuntimeException ex) {
-            throw ex;
+        }
+        catch (Exception ex) {
+            logger.log(Level.WARNING, "{0}", ex);
         }
     }
 

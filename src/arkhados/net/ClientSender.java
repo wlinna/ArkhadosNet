@@ -35,6 +35,7 @@ import com.jme3.network.Client;
 import com.jme3.network.HostedConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  *
@@ -69,7 +70,11 @@ public class ClientSender extends Sender {
         }
 
         OneTrueMessage otm = createOneTrueMessage(null);
-        client.send(otm);
+        try {
+            client.send(otm);            
+        } catch (Exception ex) {     
+            logger.log(Level.WARNING, "{0}", ex);
+        }
     }
 
     @Override
@@ -100,7 +105,7 @@ public class ClientSender extends Sender {
     public Client getClient() {
         return client;
     }
-    
+
     public void setClient(Client client) {
         this.client = client;
     }
