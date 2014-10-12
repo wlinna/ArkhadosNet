@@ -61,7 +61,18 @@ public class Receiver extends AbstractAppState implements MessageListener {
     private Map<HostedConnection, Integer> lastReceivedOrderNumMap = new HashMap<>();
 
     public void registerCommandHandler(CommandHandler handler) {
+        if (handler == null) {
+            throw new IllegalArgumentException("Null CommandHandler's are not accepted");
+        }
         handlers.add(handler);
+    }
+    
+    public boolean removeCommandHandler(CommandHandler handler) {
+        if (handler == null) {
+            throw new IllegalArgumentException("Null CommandHandler's are not accepted");
+        }
+        
+        return handlers.remove(handler);
     }
 
     @Override
