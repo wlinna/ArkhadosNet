@@ -134,6 +134,8 @@ public class Receiver extends AbstractAppState implements MessageListener {
                 continue;
             }
                     
+            // TODO: Investigate why ConcurrentModificationException happens here so often
+            // NOTE: Problem doesn't seem to relate to threads
             for (CommandHandler commandHandler : handlers) {
                 commandHandler.readGuaranteed(source, otmIdCommandListPair.getCommandList());
             }
