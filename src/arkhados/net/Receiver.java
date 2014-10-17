@@ -145,6 +145,7 @@ public class Receiver extends AbstractAppState implements MessageListener {
     }
 
     private void handleUnreliable(Object source, OneTrueMessage otp) {
+        // FIXME: ConcurrentModificatinException sometimes happens right here
         for (CommandHandler commandHandler : handlers) {
             commandHandler.readUnreliable(source, otp.getUnreliables());
         }
