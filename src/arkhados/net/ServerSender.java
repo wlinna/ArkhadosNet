@@ -92,6 +92,8 @@ public class ServerSender extends Sender {
     }
 
     public void addConnection(HostedConnection conn) {
+        // NOTE: SerializationException happens even with these so it might be better to just
+        // not use synchronizedList
         unconfirmedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<OtmIdCommandListPair>()));
         enqueuedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<Command>()));
         

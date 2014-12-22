@@ -31,13 +31,11 @@
  */
 package arkhados.net;
 
-import java.util.List;
-
 /**
  *
  * @author william
  */
 public interface CommandHandler {
-    public void readGuaranteed(Object source, List<Command> guaranteed);
-    public void readUnreliable(Object source, List<Command> unreliables);
+    public void readGuaranteed(Object source, Command guaranteed);
+    public void readUnreliable(Object source, Command unreliable);
 }

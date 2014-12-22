@@ -122,24 +122,21 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     public abstract void sendMessage();
 
     @Override
-    public void readGuaranteed(Object source, List<Command> guaranteed) {
+    public void readGuaranteed(Object source, Command guaranteed) {
     }
 
     @Override
-    public void readUnreliable(Object source, List<Command> unreliables) {
-        for (Command command : unreliables) {
-            if (command instanceof Ack) {
-                Ack ack = (Ack) command;
-                confirmAllUntil(source, ack.getConfirmedOtmId());
-                break;
-            }
+    public void readUnreliable(Object source, Command unreliable) {
+        if (unreliable instanceof Ack) {
+            Ack ack = (Ack) unreliable;
+            confirmAllUntil(source, ack.getConfirmedOtmId());
         }
     }
 
     public abstract boolean isClient();
 
     public abstract boolean isServer();
-    
+
     public abstract void reset();
 
     protected abstract List<OtmIdCommandListPair> getGuaranteedForSource(Object source);

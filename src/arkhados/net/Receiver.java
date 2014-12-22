@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,12 +67,12 @@ public class Receiver extends AbstractAppState implements MessageListener {
         }
         handlers.add(handler);
     }
-    
+
     public boolean removeCommandHandler(CommandHandler handler) {
         if (handler == null) {
             throw new IllegalArgumentException("Null CommandHandler's are not accepted");
         }
-        
+
         return handlers.remove(handler);
     }
 
@@ -92,13 +93,16 @@ public class Receiver extends AbstractAppState implements MessageListener {
     }
 
     @Override
-    public void messageReceived(Object source, Message m) {
-        OneTrueMessage otp = (OneTrueMessage) m;
+    public void messageReceived(final Object source, Message m) {
+        final OneTrueMessage otp = (OneTrueMessage) m;
 
         if (otp.getOrderNum() < getLastReceivedOrderNum(source)) {
             return;
         }
 
+//        app.enqueue(new Callable<Void>() {
+//            @Override
+//            public Void call() throws Exception {
         if (!otp.getGuaranteed().isEmpty()) {
             handleGuaranteed(source, otp);
         }
@@ -106,6 +110,9 @@ public class Receiver extends AbstractAppState implements MessageListener {
         setLastReceivedOrderNum(source, otp.getOrderNum());
 
         handleUnreliable(source, otp);
+//                return null;
+//            }
+//        });
     }
 
     private int getLastReceivedOrderNum(Object source) {
@@ -128,16 +135,18 @@ public class Receiver extends AbstractAppState implements MessageListener {
 
     private void handleGuaranteed(Object source, OneTrueMessage otp) {
         int lastReceivedOrderNumber = getLastReceivedOrderNum(source);
-        
+
         for (OtmIdCommandListPair otmIdCommandListPair : otp.getGuaranteed()) {
             if (otmIdCommandListPair.getOtmId() <= lastReceivedOrderNumber) {
                 continue;
             }
-                    
-            // TODO: Investigate why ConcurrentModificationException happens here so often
-            // NOTE: Problem doesn't seem to relate to threads
-            for (CommandHandler commandHandler : handlers) {
-                commandHandler.readGuaranteed(source, otmIdCommandListPair.getCommandList());
+
+            // // TODO: Investigate why ConcurrentModificationException happens here so often
+            // // NOTE: It might have something / much to do with ACK
+            for (Command command : otmIdCommandListPair.getCommandList()) {
+                for (CommandHandler commandHandler : handlers) {
+                    commandHandler.readGuaranteed(source, command);
+                }
             }
         }
 
@@ -146,15 +155,18 @@ public class Receiver extends AbstractAppState implements MessageListener {
 
     private void handleUnreliable(Object source, OneTrueMessage otp) {
         // FIXME: ConcurrentModificatinException sometimes happens right here
-        for (CommandHandler commandHandler : handlers) {
-            commandHandler.readUnreliable(source, otp.getUnreliables());
+        for (Command command : otp.getUnreliables()) {
+            for (CommandHandler commandHandler : handlers) {
+                commandHandler.readUnreliable(source, command);
+            }
         }
+
     }
-    
+
     public void addConnection(HostedConnection connection) {
         lastReceivedOrderNumMap.put(connection, -1);
     }
-    
+
     public void reset() {
         lastReceivedOrderNumMap.clear();
         lastReceivedOrderNum = -1;
