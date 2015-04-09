@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +50,8 @@ import java.util.logging.Logger;
  */
 public class Receiver extends AbstractAppState implements MessageListener {
 
-    private static final Logger logger = Logger.getLogger(Receiver.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(Receiver.class.getName());
 
     static {
         logger.setLevel(Level.SEVERE);
@@ -59,18 +59,21 @@ public class Receiver extends AbstractAppState implements MessageListener {
     private List<CommandHandler> handlers = new ArrayList<>();
     private Application app;
     private int lastReceivedOrderNum = -1;
-    private Map<HostedConnection, Integer> lastReceivedOrderNumMap = new HashMap<>();
+    private Map<HostedConnection, Integer> lastReceivedOrderNumMap =
+            new HashMap<>();
 
     public void registerCommandHandler(CommandHandler handler) {
         if (handler == null) {
-            throw new IllegalArgumentException("Null CommandHandler's are not accepted");
+            throw new IllegalArgumentException("Null CommandHandlers are not"
+                    + " accepted");
         }
         handlers.add(handler);
     }
 
     public boolean removeCommandHandler(CommandHandler handler) {
         if (handler == null) {
-            throw new IllegalArgumentException("Null CommandHandler's are not accepted");
+            throw new IllegalArgumentException("Null CommandHandlers are not"
+                    + " accepted");
         }
 
         return handlers.remove(handler);
@@ -88,21 +91,19 @@ public class Receiver extends AbstractAppState implements MessageListener {
         if (sender.isClient()) {
             sender.addCommand(ack);
         } else {
-            ((ServerSender) sender).addCommandForSingle(ack, (HostedConnection) source);
+            ((ServerSender) sender).addCommandForSingle(ack,
+                    (HostedConnection) source);
         }
     }
 
     @Override
-    public void messageReceived(final Object source, Message m) {
-        final OneTrueMessage otp = (OneTrueMessage) m;
+    public void messageReceived(Object source, Message m) {
+        OneTrueMessage otp = (OneTrueMessage) m;
 
         if (otp.getOrderNum() < getLastReceivedOrderNum(source)) {
             return;
         }
 
-//        app.enqueue(new Callable<Void>() {
-//            @Override
-//            public Void call() throws Exception {
         if (!otp.getGuaranteed().isEmpty()) {
             handleGuaranteed(source, otp);
         }
@@ -110,9 +111,6 @@ public class Receiver extends AbstractAppState implements MessageListener {
         setLastReceivedOrderNum(source, otp.getOrderNum());
 
         handleUnreliable(source, otp);
-//                return null;
-//            }
-//        });
     }
 
     private int getLastReceivedOrderNum(Object source) {
@@ -141,8 +139,9 @@ public class Receiver extends AbstractAppState implements MessageListener {
                 continue;
             }
 
-            // // TODO: Investigate why ConcurrentModificationException happens here so often
-            // // NOTE: It might have something / much to do with ACK
+            // TODO: Investigate why ConcurrentModificationException happens here so often
+            // NOTE: It might have something / much to do with ACK
+            // NOTE: Or perhaps handlers-list is being changed
             for (Command command : otmIdCommandListPair.getCommandList()) {
                 for (CommandHandler commandHandler : handlers) {
                     commandHandler.readGuaranteed(source, command);

@@ -34,9 +34,9 @@ package arkhados.net;
 import com.jme3.network.Filters;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Server;
+import java.nio.BufferOverflowException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +51,8 @@ public class ServerSender extends Sender {
     private final Map<HostedConnection, List<OtmIdCommandListPair>> unconfirmedGuaranteed = new HashMap<>();
     private final Map<HostedConnection, List<Command>> enqueuedGuaranteed = new HashMap<>();
     private final Map<HostedConnection, List<Command>> enqueuedUnreliables = new HashMap<>();
-    private Server server;    
-    
+    private Server server;
+
     public ServerSender(Server server) {
         this.server = server;
     }
@@ -63,13 +63,16 @@ public class ServerSender extends Sender {
                 OneTrueMessage otm = createOneTrueMessage(connection);
                 server.broadcast(Filters.in(connection), otm);
             }
-        }
-        catch (Exception ex) {
-            logger.log(Level.WARNING, "{0}", ex);
+        } catch (BufferOverflowException ex) {
+            logger.log(Level.SEVERE, "", ex);
+            System.exit(1);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "", ex);
         }
     }
 
-    public void addCommandForSingle(Command command, HostedConnection connection) {
+    public void addCommandForSingle(Command command,
+            HostedConnection connection) {
         if (command.isGuaranteed()) {
             enqueuedGuaranteed.get(connection).add(command);
         } else {
@@ -84,7 +87,12 @@ public class ServerSender extends Sender {
         addCommand(command, server.getConnections());
     }
 
-    public void addCommand(Command command, Collection<HostedConnection> connections) {
+    public void addCommand(Command command,
+            Collection<HostedConnection> connections) {
+        if (command == null) {
+            throw new IllegalArgumentException("Null Commands are"
+                    + " not allowed");
+        }
         setShouldSend(true);
         for (HostedConnection hostedConnection : connections) {
             addCommandForSingle(command, hostedConnection);
@@ -92,13 +100,8 @@ public class ServerSender extends Sender {
     }
 
     public void addConnection(HostedConnection conn) {
-        // NOTE: SerializationException happens even with these so it might be better to just
-        // not use synchronizedList
-        unconfirmedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<OtmIdCommandListPair>()));
-        enqueuedGuaranteed.put(conn, Collections.synchronizedList(new ArrayList<Command>()));
-        
-        // There doesn't seem to be any problems with unreliables so 
-        // enqueuedUnreliables gets unsynchronized list
+        unconfirmedGuaranteed.put(conn, new ArrayList<OtmIdCommandListPair>());
+        enqueuedGuaranteed.put(conn, new ArrayList<Command>());
         enqueuedUnreliables.put(conn, new ArrayList<Command>());
     }
 
@@ -126,13 +129,14 @@ public class ServerSender extends Sender {
     }
 
     @Override
-    protected List<Command> getEnqueuedGuaranteedForSource(HostedConnection connection) {
-        List<Command> list = enqueuedGuaranteed.get(connection);
-        return list;
+    protected List<Command> getEnqueuedGuaranteedForSource(
+            HostedConnection connection) {
+        return enqueuedGuaranteed.get(connection);
     }
 
     @Override
-    protected List<Command> getEnqueuedUnreliablesForSource(HostedConnection connection) {
+    protected List<Command> getEnqueuedUnreliablesForSource(
+            HostedConnection connection) {
         return enqueuedUnreliables.get(connection);
     }
 

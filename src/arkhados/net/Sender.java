@@ -38,6 +38,7 @@ import com.jme3.network.HostedConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,25 +46,32 @@ import java.util.logging.Logger;
  *
  * @author william
  */
-public abstract class Sender extends AbstractAppState implements CommandHandler {
+public abstract class Sender extends AbstractAppState
+        implements CommandHandler {
 
-    protected static final Logger logger = Logger.getLogger(Sender.class.getName());
+    protected static final Logger logger =
+            Logger.getLogger(Sender.class.getName());
 
     static {
         logger.setLevel(Level.INFO);
     }
     private int otmIdCounter = 0;
     private boolean shouldSend;
+    private Application app;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
+        this.app = app;
     }
 
     protected OneTrueMessage createOneTrueMessage(HostedConnection connection) {
-        List<OtmIdCommandListPair> unconfirmedGuaranteed = getGuaranteedForSource(connection);
-        List<Command> enqueuedGuaranteed = getEnqueuedGuaranteedForSource(connection);
-        List<Command> enqueuedUnreliables = getEnqueuedUnreliablesForSource(connection);
+        List<OtmIdCommandListPair> unconfirmedGuaranteed =
+                getGuaranteedForSource(connection);
+        List<Command> enqueuedGuaranteed =
+                getEnqueuedGuaranteedForSource(connection);
+        List<Command> enqueuedUnreliables =
+                getEnqueuedUnreliablesForSource(connection);
 
         OneTrueMessage otm = new OneTrueMessage(otmIdCounter);
 
@@ -71,10 +79,6 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
             unconfirmedGuaranteed.add(new OtmIdCommandListPair(otmIdCounter,
                     new ArrayList<>(enqueuedGuaranteed)));
         }
-
-        otm.setOrderNum(otmIdCounter);
-        otm.getGuaranteed().clear();
-        otm.getUnreliables().clear();
 
         if (!unconfirmedGuaranteed.isEmpty()) {
             otm.getGuaranteed().addAll(unconfirmedGuaranteed);
@@ -90,9 +94,11 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     }
 
     private void confirmAllUntil(Object source, int until) {
-        List<OtmIdCommandListPair> listToRemoveFrom = getGuaranteedForSource(source);
+        List<OtmIdCommandListPair> listToRemoveFrom =
+                getGuaranteedForSource(source);
 
-        for (Iterator<OtmIdCommandListPair> it = listToRemoveFrom.iterator(); it.hasNext();) {
+        for (Iterator<OtmIdCommandListPair> it = listToRemoveFrom.iterator();
+                it.hasNext();) {
             OtmIdCommandListPair otmIdCommandListPair = it.next();
             if (otmIdCommandListPair.getOtmId() <= until) {
                 it.remove();
@@ -126,10 +132,16 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
     }
 
     @Override
-    public void readUnreliable(Object source, Command unreliable) {
+    public void readUnreliable(final Object source, final Command unreliable) {
         if (unreliable instanceof Ack) {
-            Ack ack = (Ack) unreliable;
-            confirmAllUntil(source, ack.getConfirmedOtmId());
+            app.enqueue(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Ack ack = (Ack) unreliable;
+                    confirmAllUntil(source, ack.getConfirmedOtmId());
+                    return null;
+                }
+            });
         }
     }
 
@@ -139,11 +151,14 @@ public abstract class Sender extends AbstractAppState implements CommandHandler 
 
     public abstract void reset();
 
-    protected abstract List<OtmIdCommandListPair> getGuaranteedForSource(Object source);
+    protected abstract List<OtmIdCommandListPair> getGuaranteedForSource(
+            Object source);
 
-    protected abstract List<Command> getEnqueuedGuaranteedForSource(HostedConnection connection);
+    protected abstract List<Command> getEnqueuedGuaranteedForSource(
+            HostedConnection connection);
 
-    protected abstract List<Command> getEnqueuedUnreliablesForSource(HostedConnection connection);
+    protected abstract List<Command> getEnqueuedUnreliablesForSource(
+            HostedConnection connection);
 
     public void setShouldSend(boolean shouldSend) {
         this.shouldSend = shouldSend;
