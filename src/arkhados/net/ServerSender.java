@@ -71,7 +71,7 @@ public class ServerSender extends Sender {
         }
     }
 
-    public void addCommandForSingle(Command command,
+    public synchronized void addCommandForSingle(Command command,
             HostedConnection connection) {
         if (command.isGuaranteed()) {
             enqueuedGuaranteed.get(connection).add(command);
@@ -149,5 +149,11 @@ public class ServerSender extends Sender {
 
     public Server getServer() {
         return server;
+    }
+
+    public void removeConnection(HostedConnection connection) {
+        unconfirmedGuaranteed.remove(connection);
+        enqueuedGuaranteed.remove(connection);
+        enqueuedUnreliables.remove(connection);
     }
 }
