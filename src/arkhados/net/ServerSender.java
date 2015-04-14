@@ -71,7 +71,7 @@ public class ServerSender extends Sender {
         }
     }
 
-    public synchronized void addCommandForSingle(Command command,
+    public void addCommandForSingle(Command command,
             HostedConnection connection) {
         if (command.isGuaranteed()) {
             enqueuedGuaranteed.get(connection).add(command);
