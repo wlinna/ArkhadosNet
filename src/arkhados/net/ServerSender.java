@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author william
  */
-public class ServerSender extends Sender {
+public class ServerSender extends AbstractSender {
 
     private final Map<HostedConnection, List<OtmIdCommandListPair>> unconfirmedGuaranteed = new HashMap<>();
     private final Map<HostedConnection, List<Command>> enqueuedGuaranteed = new HashMap<>();

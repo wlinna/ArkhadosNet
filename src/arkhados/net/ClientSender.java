@@ -41,7 +41,7 @@ import java.util.logging.Level;
  *
  * @author william
  */
-public class ClientSender extends Sender {
+public class ClientSender extends AbstractSender {
 
     private List<OtmIdCommandListPair> unconfirmedGuaranteed = new ArrayList<>();
     private List<Command> enqueuedGuaranteed = new ArrayList<>();
