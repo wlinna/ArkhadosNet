@@ -43,9 +43,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-public class DefaultReceiver extends
-        AbstractAppState implements Receiver{
+public class DefaultReceiver extends AbstractAppState implements Receiver {
 
     private static final Logger logger =
             Logger.getLogger(Receiver.class.getName());
@@ -113,7 +111,15 @@ public class DefaultReceiver extends
     }
 
     private int getLastReceivedOrderNum(Object source) {
-        Sender sender = app.getStateManager().getState(Sender.class);
+
+        Sender sender;
+        try {
+            // FIXME: NPE here
+            sender = app.getStateManager().getState(Sender.class);
+        } catch (NullPointerException ex) {
+            logger.log(Level.WARNING, "", ex);
+            throw ex;
+        }
         if (sender.isClient()) {
             return lastReceivedOrderNum;
         } else {
