@@ -37,15 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-/**
- *
- * @author william
- */
 public class ClientSender extends AbstractSender {
 
-    private List<OtmIdCommandListPair> unconfirmedGuaranteed = new ArrayList<>();
-    private List<Command> enqueuedGuaranteed = new ArrayList<>();
-    private List<Command> enqueuedUnreliables = new ArrayList<>();
+    private final List<OtmIdCommandListPair> unconfirmedGuaranteed
+            = new ArrayList<>();
+    private final List<Command> enqueuedGuaranteed = new ArrayList<>();
+    private final List<Command> enqueuedUnreliables = new ArrayList<>();
     private Client client;
 
     @Override
@@ -71,8 +68,8 @@ public class ClientSender extends AbstractSender {
 
         OneTrueMessage otm = createOneTrueMessage(null);
         try {
-            client.send(otm);            
-        } catch (Exception ex) {     
+            client.send(otm);
+        } catch (Exception ex) {
             logger.log(Level.WARNING, "{0}", ex);
         }
     }

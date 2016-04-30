@@ -35,10 +35,6 @@ import com.jme3.app.state.AppState;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.MessageListener;
 
-/**
- *
- * @author william
- */
 public interface Receiver extends AppState, MessageListener {
    
     public void registerCommandHandler(CommandHandler handler);

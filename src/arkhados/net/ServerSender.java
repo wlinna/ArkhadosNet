@@ -42,16 +42,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-/**
- *
- * @author william
- */
 public class ServerSender extends AbstractSender {
 
     private final Map<HostedConnection, List<OtmIdCommandListPair>> unconfirmedGuaranteed = new HashMap<>();
     private final Map<HostedConnection, List<Command>> enqueuedGuaranteed = new HashMap<>();
     private final Map<HostedConnection, List<Command>> enqueuedUnreliables = new HashMap<>();
-    private Server server;
+    private final Server server;
 
     public ServerSender(Server server) {
         this.server = server;

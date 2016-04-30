@@ -34,11 +34,6 @@ package arkhados.net;
 import com.jme3.network.serializing.Serializable;
 import java.util.List;
 
-/**
- *
- * @author william
- */
-
 @Serializable
 public class OtmIdCommandListPair {
     private int otmId;

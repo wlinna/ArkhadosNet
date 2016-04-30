@@ -33,10 +33,6 @@ package arkhados.net;
 
 import com.jme3.app.state.AppState;
 
-/**
- *
- * @author william
- */
 public interface Sender extends AppState, CommandHandler {    
 
     public void addCommand(Command command);

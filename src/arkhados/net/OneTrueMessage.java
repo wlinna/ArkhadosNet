@@ -36,11 +36,6 @@ import com.jme3.network.serializing.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author william
- */
-
 @Serializable
 public class OneTrueMessage extends AbstractMessage {
     private int orderNum;

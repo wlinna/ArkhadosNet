@@ -33,11 +33,6 @@ package arkhados.net;
 
 import com.jme3.network.serializing.Serializable;
 
-/**
- *
- * @author william
- */
-
 @Serializable
 public class Ack implements Command {
     private int confirmedOtmId;

@@ -31,10 +31,6 @@
  */
 package arkhados.net;
 
-/**
- *
- * @author william
- */
 public interface CommandHandler {
     public void readGuaranteed(Object source, Command guaranteed);
     public void readUnreliable(Object source, Command unreliable);

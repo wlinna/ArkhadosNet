@@ -31,11 +31,6 @@
  */
 package arkhados.net;
 
-/**
- *
- * @author william
- */
-
 public interface Command {
     public boolean isGuaranteed();
 }
