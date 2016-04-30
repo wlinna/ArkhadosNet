@@ -96,9 +96,9 @@ public class ServerSender extends AbstractSender {
     }
 
     public void addConnection(HostedConnection conn) {
-        unconfirmedGuaranteed.put(conn, new ArrayList<OtmIdCommandListPair>());
-        enqueuedGuaranteed.put(conn, new ArrayList<Command>());
-        enqueuedUnreliables.put(conn, new ArrayList<Command>());
+        unconfirmedGuaranteed.put(conn, new ArrayList<>());
+        enqueuedGuaranteed.put(conn, new ArrayList<>());
+        enqueuedUnreliables.put(conn, new ArrayList<>());
     }
 
     @Override

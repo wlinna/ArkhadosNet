@@ -51,10 +51,10 @@ public class DefaultReceiver extends AbstractAppState implements Receiver {
     static {
         logger.setLevel(Level.SEVERE);
     }
-    private List<CommandHandler> handlers = new ArrayList<>();
+    private final List<CommandHandler> handlers = new ArrayList<>();
     private Application app;
     private int lastReceivedOrderNum = -1;
-    private Map<HostedConnection, Integer> lastReceivedOrderNumMap =
+    private final Map<HostedConnection, Integer> lastReceivedOrderNumMap =
             new HashMap<>();
 
     @Override

@@ -38,7 +38,6 @@ import com.jme3.network.HostedConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,13 +126,10 @@ public abstract class AbstractSender  extends AbstractAppState
     @Override
     public void readUnreliable(final Object source, final Command unreliable) {
         if (unreliable instanceof Ack) {
-            app.enqueue(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    Ack ack = (Ack) unreliable;
-                    confirmAllUntil(source, ack.getConfirmedOtmId());
-                    return null;
-                }
+            app.enqueue(() -> {
+                Ack ack = (Ack) unreliable;
+                confirmAllUntil(source, ack.getConfirmedOtmId());
+                return null;
             });
         }
     }
