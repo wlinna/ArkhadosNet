@@ -37,7 +37,6 @@ import com.jme3.network.base.MessageListenerRegistry;
 import com.jme3.network.base.MessageProtocol;
 import com.jme3.network.kernel.Endpoint;
 import com.jme3.network.kernel.Kernel;
-import com.jme3.network.kernel.udp.UdpKernel;
 import com.jme3.network.message.ChannelInfoMessage;
 import com.jme3.network.message.ClientRegistrationMessage;
 import com.jme3.network.message.DisconnectMessage;
@@ -682,7 +681,6 @@ public class UdpServer implements Server {
             lastReceivals.put(source, System.currentTimeMillis());
 
             if (m instanceof ConnectionMessageContainer) {
-                System.out.println("Received message");
                 ConnectionMessageContainer c = (ConnectionMessageContainer) m;
                 Integer orderNumber = orderNums.get(source);
 

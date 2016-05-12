@@ -140,13 +140,10 @@ public class UdpClient implements Client {
         executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                System.out.println("Sending message");
                 Message peek = forcedMessages.peek();
                 if (peek == null) {
                     return;
                 }
-
-                System.out.println("Message is not null!");
 
                 ConnectionMessageContainer msg = new ConnectionMessageContainer(
                         orderNumCounter, peek, true);
@@ -499,7 +496,6 @@ public class UdpClient implements Client {
 
         @Override
         public void messageReceived(Object source, Message m) {
-            System.out.println("Received message");
             if (m instanceof ConnectionMessageContainer) {
                 ConnectionMessageContainer c = (ConnectionMessageContainer) m;
                 if (c.getOrderNum() <= lastOrderNum) {
